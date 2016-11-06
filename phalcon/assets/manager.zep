@@ -330,11 +330,6 @@ class Manager
 		let typeCss = "css";
 
 		/**
-		 * Prepare options if the collection must be filtered
-		 */
-		if count(filters) {
-
-		/**
 		 * Prepare options if the collection must be filtered and / or joined
 		 *
 		 * The objective is to obtain the source and target paths. In particular:
@@ -800,7 +795,6 @@ class Manager
 				let output .= html;
 			}
 		}
-
 		return output;
 	}
 
