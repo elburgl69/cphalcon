@@ -495,7 +495,7 @@ class ManagerTest extends UnitTest
 	public function testJoinWithFilter()
 	{
 		$this->specify(
-			"Joining with local filter does not works correctly",
+			"Joining with filter does not works correctly",
 			function () {
 				$I      = $this->tester;
 				$file   = md5(microtime(true)) . '.js';
@@ -529,7 +529,7 @@ class ManagerTest extends UnitTest
 	public function testJoinWithoutFilter()
 	{
 		$this->specify(
-			"Setting local target does not works correctly",
+			"Join without filter does not works correctly",
 			function () {
 				$I      = $this->tester;
 				$file   = md5(microtime(true)) . '.js';
@@ -562,7 +562,7 @@ class ManagerTest extends UnitTest
 	public function testFilterWithoutJoin()
 	{
 		$this->specify(
-			"Setting local target does not works correctly",
+			"FIlter without joining does not works correctly",
 			function () {
 				$assets = new Manager();
 
