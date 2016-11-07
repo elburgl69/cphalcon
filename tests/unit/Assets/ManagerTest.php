@@ -386,7 +386,7 @@ class ManagerTest extends UnitTest
 
                 $expected = sprintf(
                     '<script type="text/javascript" src="%s"></script>%s',
-                    PATH_DATA. 'assets/jquery.js',
+					'/production/combined.js',
                     PHP_EOL
                 );
 
@@ -482,4 +482,106 @@ class ManagerTest extends UnitTest
             }
         );
     }
+	/**
+	 * Tests join with filter set
+	 *
+	 * @issue  12370
+	 * @author Serghei Iakovlev <serghei@phalconphp.com>
+	 * @author Dreamszhu <dreamsxin@qq.com>
+	 * @author Leo van Elburg <leo@lvesoft.nl>
+	 * @since  2016-11-5
+	 */
+	public function testJoinWithFilter()
+	{
+		$this->specify(
+			"Joining with filter does not works correctly",
+			function () {
+				$I      = $this->tester;
+				$file   = md5(microtime(true)) . '.js';
+				$assets = new Manager();
+
+				$assets->useImplicitOutput(false);
+				$assets->collection('js')
+					->addJs(PATH_DATA. 'assets/jquery.js')
+					->join(true)
+					->addFilter(new Jsmin())
+					->setTargetPath(PATH_OUTPUT . "tests/assets/{$file}")
+					->setTargetUri('js/jquery.js');
+
+				expect($assets->outputJs('js'))->equals('<script type="text/javascript" src="/js/jquery.js"></script>' . PHP_EOL);
+
+				$I->seeFileFound(PATH_OUTPUT . "tests/assets/{$file}");
+				$I->deleteFile(PATH_OUTPUT . "tests/assets/{$file}");
+			}
+		);
+	}
+
+	/**
+	 * Tests join without filter set
+	 *
+	 * @issue  12370
+	 * @author Serghei Iakovlev <serghei@phalconphp.com>
+	 * @author Dreamszhu <dreamsxin@qq.com>
+	 * @author Leo van Elburg <leo@lvesoft.nl>
+	 * @since  2016-11-5
+	 */
+	public function testJoinWithoutFilter()
+	{
+		$this->specify(
+			"Join without filter set does not works correctly",
+			function () {
+				$I      = $this->tester;
+				$file   = md5(microtime(true)) . '.js';
+				$assets = new Manager();
+
+				$assets->useImplicitOutput(false);
+				$assets->collection('js')
+					->addJs(PATH_DATA. 'assets/jquery.js')
+					->join(true)
+					->setTargetPath(PATH_OUTPUT . "tests/assets/{$file}")
+					->setTargetUri('js/jquery.js');
+
+				expect($assets->outputJs('js'))->equals('<script type="text/javascript" src="/js/jquery.js"></script>' . PHP_EOL);
+
+				$I->seeFileFound(PATH_OUTPUT . "tests/assets/{$file}");
+				$I->deleteFile(PATH_OUTPUT . "tests/assets/{$file}");
+			}
+		);
+	}
+
+	/**
+	 * Tests filter without joining
+	 *
+	 * @issue  12370
+	 * @author Serghei Iakovlev <serghei@phalconphp.com>
+	 * @author Dreamszhu <dreamsxin@qq.com>
+	 * @author Leo van Elburg <leo@lvesoft.nl>
+	 * @since  2016-11-5
+	 */
+	public function testFilterWithoutJoin()
+	{
+		$this->specify(
+			"Filter without join does not works correctly",
+			function () {
+				$assets = new Manager();
+
+				$assets->useImplicitOutput(false);
+				$assets->collection('js')
+					->addJs(PATH_DATA. 'assets/jquery.js')
+					->addJs('js/script2.js')
+					->join(false)
+					->addFilter(new Jsmin());
+
+				$expected = sprintf(
+					"%s\n%s\n",
+					'<script type="text/javascript" src="/js/jquery.js"></script>',
+					'<script type="text/javascript" src="/js/script2.js"></script>'
+				);
+
+				expect($assets->outputJs('js'))->equals($expected);
+			}
+		);
+	}
+
 }
+

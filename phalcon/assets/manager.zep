@@ -325,9 +325,14 @@ class Manager
 		let typeCss = "css";
 
 		/**
+	     * Should the collection be joined.
+		 */
+		let join = collection->getJoin();
+
+		/**
 		 * Prepare options if the collection must be filtered
 		 */
-		if count(filters) {
+		if count(filters) || join {
 
 			let options = this->_options;
 
@@ -381,11 +386,6 @@ class Manager
 			let filteredJoinedContent = "";
 
 			/**
-			 * Check if the collection have its own target base path
-			 */
-			let join = collection->getJoin();
-
-			/**
 			 * Check for valid target paths if the collection must be joined
 			 */
 			if join {
@@ -418,7 +418,7 @@ class Manager
 			/**
 			 * If the collection must not be joined we must print a HTML for each one
 			 */
-			if count(filters) {
+			if count(filters) || join {
 				if local {
 
 					/**
@@ -448,8 +448,13 @@ class Manager
 
 				/**
 				 * Get the target path, we need to write the filtered content to a file
+				 * In case of join == true completeTargetPath already point the new file, so set that value.
 				 */
-				let targetPath = $resource->getRealTargetPath(completeTargetPath);
+				 if join == true {
+                    let targetPath = completeTargetPath;
+                 } else {
+                    let targetPath = aResource->getRealTargetPath(completeTargetPath);
+                 }
 
 				/**
 				 * We need a valid final target path
@@ -635,7 +640,7 @@ class Manager
 			}
 		}
 
-		if count(filters) {
+		if count(filters)  || join {
 
 			if join == true {
 
